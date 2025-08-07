@@ -25,7 +25,6 @@ Route::post('/auth/login', [AuthController::class, 'login']);
 Route::middleware('auth:api')->group(function () {
     // Auth
     Route::post('/auth/logout', [AuthController::class, 'logout']);
-    Route::get('/auth/me', [AuthController::class, 'me']);
 
     // Post
     Route::post('/posts', [PostController::class, 'store']);
@@ -36,7 +35,6 @@ Route::middleware('auth:api')->group(function () {
 
     // Admin
     Route::prefix('admin')->group(function () {
-        Route::get('/dashboard', [AdminController::class, 'dashboard']);
         Route::get('/users', [AdminController::class, 'users']);
         Route::get('/posts', [AdminController::class, 'posts']);
         Route::delete('/users/{id}', [AdminController::class, 'deleteUser']);
