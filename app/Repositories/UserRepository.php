@@ -53,14 +53,4 @@ class UserRepository implements UserRepositoryInterface
     {
         return $user->delete();
     }
-
-    public function getStats(): array
-    {
-        return [
-            'total_users' => User::count(),
-            'new_users_today' => User::whereDate('created_at', today())->count(),
-            'new_users_this_week' => User::whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()])->count(),
-            'new_users_this_month' => User::whereMonth('created_at', now()->month)->count(),
-        ];
-    }
 } 

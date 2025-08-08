@@ -54,9 +54,4 @@ class PostService
     {
         return $this->postRepository->getRecentPosts($perPage);
     }
-
-    public function getStats(): array
-    {
-        return $this->postRepository->getStats();
-    }
 } 

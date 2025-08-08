@@ -14,5 +14,4 @@ interface UserRepositoryInterface
     public function getAllPaginated(int $perPage = 15);
     public function update(User $user, array $data): User;
     public function delete(User $user): bool;
-    public function getStats(): array;
-} 
+}
