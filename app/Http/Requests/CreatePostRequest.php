@@ -23,8 +23,9 @@ class CreatePostRequest extends FormRequest
     {
         return [
             'title' => 'required|string|max:255',
-            'description' => 'required|string|max:2048', // 2KB limit
-            'contact_phone' => 'required|string|max:20',
+            'description' => 'required|string|max:2048',
+            'contact_phone' => 'required|string|max:15',
+            'user_id' => 'required|exists:users,id',
         ];
     }
 

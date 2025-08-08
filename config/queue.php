@@ -87,6 +87,7 @@ return [
     'batching' => [
         'database' => env('DB_CONNECTION', 'mysql'),
         'table' => 'job_batches',
+        'enable_logging' => true,
     ],
 
     /*
