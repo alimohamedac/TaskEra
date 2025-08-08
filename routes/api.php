@@ -32,11 +32,4 @@ Route::middleware('auth:api')->group(function () {
     Route::put('/posts/{id}', [PostController::class, 'update']);
     Route::delete('/posts/{id}', [PostController::class, 'destroy']);
 
-    // Admin
-    Route::prefix('admin')->group(function () {
-        Route::get('/users', [AdminController::class, 'users']);
-        Route::get('/posts', [AdminController::class, 'posts']);
-        Route::delete('/users/{id}', [AdminController::class, 'deleteUser']);
-        Route::delete('/posts/{id}', [AdminController::class, 'deletePost']);
-    });
 });

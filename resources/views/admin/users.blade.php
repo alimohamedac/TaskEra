@@ -3,7 +3,12 @@
 @section('title', 'إدارة المستخدمين')
 
 @section('content_header')
-    <h1>إدارة المستخدمين</h1>
+    <div class="d-flex justify-content-between align-items-center">
+        <h1>إدارة المستخدمين</h1>
+        <a href="{{ route('admin.users.create') }}" class="btn btn-success">
+            <i class="fas fa-plus"></i> إضافة مستخدم
+        </a>
+    </div>
 @endsection
 
 @section('content')
@@ -32,7 +37,10 @@
                             <td>{{ $user->mobile }}</td>
                             <td>{{ $user->posts->count() }}</td>
                             <td>{{ $user->created_at->format('Y-m-d') }}</td>
-                            <td>
+                            <td class="d-flex gap-2">
+                                <a href="{{ route('admin.users.edit', $user->id) }}" class="btn btn-primary btn-sm mr-1">
+                                    <i class="fas fa-edit"></i> تعديل
+                                </a>
                                 <form method="POST" action="{{ route('admin.users.delete', $user->id) }}" onsubmit="return confirm('هل أنت متأكد من الحذف؟');">
                                     @csrf
                                     @method('DELETE')

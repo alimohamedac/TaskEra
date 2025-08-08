@@ -7,7 +7,6 @@ use App\Models\User;
 use App\Services\PostService;
 use App\Services\AuthService;
 use Illuminate\Http\Request;
-use Illuminate\Http\JsonResponse;
 use App\Events\NewPostCreated;
 
 class AdminController extends Controller
@@ -24,87 +23,67 @@ class AdminController extends Controller
     /**
      * Get all users (paginated)
      */
-    public function users(Request $request): JsonResponse
+    public function users(Request $request)
     {
         $users = User::with(['posts'])->paginate(15);
 
-        return response()->json(['success' => true, 'data' => $users]);
+        return view('admin.users', compact('users'));
     }
 
     /**
      * Get all posts (paginated)
      */
-    public function posts(Request $request): JsonResponse
+    public function posts(Request $request)
     {
         $posts = Post::with(['user'])->orderBy('created_at', 'desc')->paginate(15);
 
-        return response()->json(['success' => true, 'data' => $posts]);
+        return view('admin.posts', compact('posts'));
     }
 
     /**
-     * Delete a user
+     * Delete a user and redirect to users list
      */
-    public function deleteUser(int $id): JsonResponse
+    public function deleteUser(int $id)
     {
-        try {
-            $user = User::find($id);
+        $user = User::find($id);
 
-            if (!$user) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'User not found'
-                ], 404);
-            }
-
-            $user->delete();
-
-            return response()->json([
-                'success' => true,
-                'message' => 'User deleted successfully'
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage()
-            ], 500);
+        if (!$user) {
+            return redirect()->route('admin.users')
+                ->with('error', 'المستخدم غير موجود');
         }
+
+        $user->delete();
+
+        return redirect()->route('admin.users')
+            ->with('success', 'تم حذف المستخدم بنجاح');
     }
 
     /**
-     * Delete a post
+     * Delete a post and redirect to posts list
      */
-    public function deletePost(int $id): JsonResponse
+    public function deletePost(int $id)
     {
-        try {
-            $post = Post::find($id);
+        $post = Post::find($id);
 
-            if (!$post) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Post not found'
-                ], 404);
-            }
-
-            $post->delete();
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Post deleted successfully'
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage()
-            ], 500);
+        if (!$post) {
+            return redirect()->route('admin.posts')
+                ->with('error', 'المنشور غير موجود');
         }
+
+        $post->delete();
+
+        return redirect()->route('admin.posts')
+            ->with('success', 'تم حذف المنشور بنجاح');
     }
 
     // Users CRUD
-    public function createUser() {
+    public function createUser()
+    {
         return view('admin.users_create');
     }
-    
-    public function storeUser(Request $request) {
+
+    public function storeUser(Request $request)
+    {
         $validated = $request->validate([
             'name' => 'required',
             'username' => 'required|unique:users',
@@ -112,7 +91,7 @@ class AdminController extends Controller
             'mobile' => 'required|unique:users',
             'password' => 'required|min:6',
         ]);
-        
+
         $validated['password'] = bcrypt($validated['password']);
 
         User::create($validated);
@@ -120,12 +99,15 @@ class AdminController extends Controller
         return redirect()->route('admin.users')->with('success', 'تم إضافة المستخدم بنجاح');
     }
 
-    public function editUser($id) {
+    public function editUser($id)
+    {
         $user = User::findOrFail($id);
 
         return view('admin.users_edit', compact('user'));
     }
-    public function updateUser(Request $request, $id) {
+
+    public function updateUser(Request $request, $id)
+    {
         $user = User::findOrFail($id);
 
         $validated = $request->validate([
@@ -136,7 +118,7 @@ class AdminController extends Controller
             'password' => 'nullable|min:6',
         ]);
 
-        if($request->filled('password')) {
+        if ($request->filled('password')) {
             $validated['password'] = bcrypt($request->password);
         } else {
             unset($validated['password']);
@@ -148,34 +130,38 @@ class AdminController extends Controller
     }
 
     // Posts CRUD
-    public function createPost() {
+    public function createPost()
+    {
         $users = User::all();
 
         return view('admin.posts_create', compact('users'));
     }
 
-    public function storePost(Request $request) {
+    public function storePost(Request $request)
+    {
         $validated = $request->validate([
             'title' => 'required',
             'description' => 'required|max:2048',
             'contact_phone' => 'required',
             'user_id' => 'required|exists:users,id',
         ]);
-        $post = Post::create($validated);
 
+        $post = Post::create($validated);
         event(new NewPostCreated($post));
 
         return redirect()->route('admin.posts')->with('success', 'تم إضافة المنشور بنجاح');
     }
 
-    public function editPost($id) {
+    public function editPost($id)
+    {
         $post = Post::findOrFail($id);
         $users = User::all();
 
         return view('admin.posts_edit', compact('post', 'users'));
     }
 
-    public function updatePost(Request $request, $id) {
+    public function updatePost(Request $request, $id)
+    {
         $post = Post::findOrFail($id);
 
         $validated = $request->validate([
@@ -184,6 +170,7 @@ class AdminController extends Controller
             'contact_phone' => 'required',
             'user_id' => 'required|exists:users,id',
         ]);
+
         $post->update($validated);
 
         return redirect()->route('admin.posts')->with('success', 'تم تحديث المنشور بنجاح');

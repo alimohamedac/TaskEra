@@ -2,8 +2,14 @@
 
 @section('title', 'إدارة المنشورات')
 
+
 @section('content_header')
-    <h1>إدارة المنشورات</h1>
+    <div class="d-flex justify-content-between align-items-center">
+        <h1>إدارة المنشورات</h1>
+        <a href="{{ route('admin.posts.create') }}" class="btn btn-success">
+            <i class="fas fa-plus"></i> إضافة منشور
+        </a>
+    </div>
 @endsection
 
 @section('content')
@@ -30,7 +36,10 @@
                             <td>{{ $post->contact_phone }}</td>
                             <td>{{ $post->user->name ?? '-' }}</td>
                             <td>{{ $post->created_at->format('Y-m-d') }}</td>
-                            <td>
+                            <td class="d-flex gap-2">
+                                <a href="{{ route('admin.posts.edit', $post->id) }}" class="btn btn-primary btn-sm mr-1">
+                                    <i class="fas fa-edit"></i> تعديل
+                                </a>
                                 <form method="POST" action="{{ route('admin.posts.delete', $post->id) }}" onsubmit="return confirm('هل أنت متأكد من الحذف؟');">
                                     @csrf
                                     @method('DELETE')
